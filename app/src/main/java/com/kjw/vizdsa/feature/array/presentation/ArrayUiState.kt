@@ -6,13 +6,13 @@ enum class ArrayType {
 }
 
 enum class ArrayOperation {
-    INITIALIZE,      // 초기화
-    ACCESS,          // 접근
-    UPDATE,          // 수정
-    LINEAR_SEARCH,   // 선형 탐색
-    TRAVERSE,        // 전체 순회
-    INSERT,          // 삽입
-    DELETE           // 삭제
+    INITIALIZE,         // 초기화
+    ACCESS_ELEMENTAL,   // 접근
+    UPDATE_ELEMENTAL,   // 수정
+    LINEAR_SEARCH,      // 선형 탐색
+    TRAVERSE_ARRAY,     // 전체 순회
+    INSERT_ELEMENTAL,   // 삽입
+    DELETE_ELEMENTAL    // 삭제
 }
 
 data class ArrayUiState(
