@@ -66,13 +66,24 @@ class ArrayViewModel @Inject constructor(
         _uiState.value = ArrayUiState()
     }
 
+    // 문자열을 List<Int>로 변환하는 헬퍼 함수
+    private fun parseInputValues(input: String): List<Int> {
+        if (input.isBlank()) return emptyList()
+
+        return try {
+            input.split(",").map { it.trim().toInt() }
+        } catch (e: NumberFormatException) {
+            emptyList()
+        }
+    }
+
     // 배열 초기화
     private fun executeInitialize() {
         val currentState = _uiState.value
         val parsedSize = currentState.sizeInput.toIntOrNull() ?: 0
-        val valueInput = currentState.valueInput
+        val parsedValues = parseInputValues(currentState.valueInput)
 
-        initializeArrayUseCase(parsedSize, valueInput)
+        initializeArrayUseCase(parsedSize, parsedValues)
             .onSuccess { initializedArray ->
                 _uiState.update {
                     it.copy(
