@@ -10,6 +10,11 @@ class InitializeArrayUseCase @Inject constructor() {
             return Result.failure(IllegalArgumentException("배열의 크기는 1 이상이어야 합니다."))
         }
 
+        // 최대 크기 제한 추가
+        if (size > 100) {
+            return Result.failure(IllegalArgumentException("시각화를 위해 배열 크기는 100 이하로 입력해주세요."))
+        }
+
         // 배열 생성 로직
         val newArray = if (initialValues.isEmpty()) {
             // 값이 없거나 파싱 실패 시: 0~99 랜덤 값으로 size만큼 채움
