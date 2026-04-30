@@ -106,7 +106,17 @@ class ArrayViewModel @Inject constructor(
     // 배열 요소 접근
     private fun executeUpdate() {
         val currentState = _uiState.value
-        val parsedIndex = currentState.indexInput.toIntOrNull() ?: 0
+        val parsedIndex = currentState.indexInput.toIntOrNull()
+
+        if (parsedIndex == null) {
+            _uiState.update {
+                it.copy(
+                    highlightedIndex = null,
+                    message = "올바른 인덱스(숫자)를 입력해주세요."
+                )
+            }
+            return
+        }
 
         accessElementUseCase(currentState.array, parsedIndex)
             .onSuccess { (index, value) ->
