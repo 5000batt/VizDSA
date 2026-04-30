@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -113,18 +115,39 @@ fun ArrayScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         // 중단: 배열 시각화 영역
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 60.dp),
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             itemsIndexed(uiState.array) { index, value ->
-                ArrayCell (
+                ArrayCell(
                     index = index,
                     value = value,
                     isHighlighted = index == uiState.highlightedIndex
                 )
             }
         }
+
+        // span 테스트 코드
+        /*LazyVerticalGrid(
+            columns = GridCells.Fixed(3)
+        ) {
+            // 1. 전체 너비를 차지하는 헤더 (span 3개 차지)
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Text("배열 시각화 결과", modifier = Modifier.fillMaxWidth())
+            }
+
+            // 2. 일반적인 데이터 셀 (기본 span 1 차지)
+            itemsIndexed(uiState.array) { index, value ->
+                ArrayCell(
+                    index = index,
+                    value = value,
+                    isHighlighted = index == uiState.highlightedIndex
+                )
+            }
+        }*/
 
         Spacer(modifier = Modifier.weight(1f))
 
