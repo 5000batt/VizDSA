@@ -1,7 +1,6 @@
 package com.kjw.vizdsa.feature.array.presentation.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,13 +8,19 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun ArrayCell(
@@ -24,27 +29,40 @@ fun ArrayCell(
     isHighlighted: Boolean,         // 포커스 여부
     modifier: Modifier = Modifier
 ) {
-    val boxColor = if (isHighlighted) Color.Yellow else Color.White
-    val borderColor = if (isHighlighted) Color.Red else Color.Black
+    val boxColor = when {
+        isHighlighted -> Color(0xFFFFA726)
+        value == null -> Color(0xFFE0E0E0)
+        else -> MaterialTheme.colorScheme.primary
+    }
+    val textColor = if (value == null) Color.Transparent else Color.White
 
     Column(
-        modifier = modifier.padding(4.dp),
+        modifier = modifier.padding(2.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
-                .size(50.dp)
-                .background(color = boxColor)
-                .border(1.dp, borderColor),
+                .size(60.dp)
+                .shadow(elevation = 4.dp, shape = RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(8.dp))
+                .background(color = boxColor),
             contentAlignment = Alignment.Center
         ) {
-            if (value == null) Text("") else Text(text = value.toString())
+            Text(
+                text = value?.toString() ?: "",
+                color = textColor,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
 
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(
-            text = index.toString()
+            text = index.toString(),
+            fontSize = 12.sp,
+            color = Color.Gray,
+            fontWeight = FontWeight.SemiBold
         )
     }
 }
