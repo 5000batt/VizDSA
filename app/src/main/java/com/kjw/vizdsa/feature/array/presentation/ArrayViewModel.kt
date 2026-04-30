@@ -1,6 +1,7 @@
 package com.kjw.vizdsa.feature.array.presentation
 
 import androidx.lifecycle.ViewModel
+import com.kjw.vizdsa.feature.array.domain.usecase.AccessElementUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.InitializeArrayUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +12,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ArrayViewModel @Inject constructor(
-    private val initializeArrayUseCase: InitializeArrayUseCase
+    private val initializeArrayUseCase: InitializeArrayUseCase,
+    private val accessElementUseCase: AccessElementUseCase,
 ) : ViewModel() {
 
     // 상태 관리
@@ -34,6 +36,11 @@ class ArrayViewModel @Inject constructor(
         _uiState.update { it.copy(valueInput = value) }
     }
 
+    // 배열 인덱스 입력
+    fun updateIndexInput(index: String) {
+        _uiState.update { it.copy(indexInput = index) }
+    }
+
     // 배열 동작 입력
     fun updateOperation(operation: ArrayOperation) {
         _uiState.update { it.copy(operation = operation) }
@@ -43,6 +50,7 @@ class ArrayViewModel @Inject constructor(
     fun executeOperation() {
         when (_uiState.value.operation) {
             ArrayOperation.INITIALIZE -> executeInitialize()
+            ArrayOperation.ACCESS_ELEMENTAL -> executeUpdate()
             // 나중에 INSERT 등 추가 예쩡
             else -> {}
         }
@@ -82,5 +90,33 @@ class ArrayViewModel @Inject constructor(
                 }
             }
 
+    }
+
+    // 배열 요소 접근
+    private fun executeUpdate() {
+        val currentState = _uiState.value
+        val parsedIndex = currentState.indexInput.toIntOrNull() ?: 0
+
+        accessElementUseCase(currentState.array, parsedIndex)
+            .onSuccess { (index, value) ->
+                _uiState.update {
+                    it.copy(
+                        highlightedIndex = index,
+                        message = if (value != null) {
+                            "인덱스 [$index]에 접근했습니다. 값: $value"
+                        } else {
+                            "인덱스 [$index]에 접근했지만, 값이 비어있습니다 (null)."
+                        }
+                    )
+                }
+            }
+            .onFailure { exception ->
+                _uiState.update {
+                    it.copy(
+                        highlightedIndex = null,
+                        message = exception.message ?: "접근에 실패했습니다."
+                    )
+                }
+            }
     }
 }

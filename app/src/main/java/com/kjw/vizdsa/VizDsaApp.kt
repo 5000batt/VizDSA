@@ -54,6 +54,7 @@ fun VizDsaApp() {
                     onTypeChange = viewModel::updateArrayType,
                     onSizeChange = viewModel::updateSizeInput,
                     onValueChange = viewModel::updateValueInput,
+                    onIndexChange = viewModel::updateIndexInput,
                     onOperationChange = viewModel::updateOperation,
                     onExecute = viewModel::executeOperation,
                     onMessageShow = viewModel::clearMessage,

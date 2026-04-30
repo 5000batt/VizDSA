@@ -47,6 +47,7 @@ fun ArrayScreen(
     onTypeChange: (ArrayType) -> Unit,
     onSizeChange: (String) -> Unit,
     onValueChange: (String) -> Unit,
+    onIndexChange: (String) -> Unit,
     onOperationChange: (ArrayOperation) -> Unit,
     onExecute: () -> Unit,
     onMessageShow: () -> Unit,
@@ -144,22 +145,39 @@ fun ArrayScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            OutlinedTextField(
-                value = uiState.sizeInput,
-                onValueChange = onSizeChange,
-                label = { Text("배열 크기") },
-                modifier = Modifier.weight(1f),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
+            when (uiState.operation) {
+                ArrayOperation.INITIALIZE -> {
+                    OutlinedTextField(
+                        value = uiState.sizeInput,
+                        onValueChange = onSizeChange,
+                        label = { Text("배열 크기") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
 
-            OutlinedTextField(
-                value = uiState.valueInput,
-                onValueChange = onValueChange,
-                label = { Text("배열 요소 (ex: 1,2,3)") },
-                modifier = Modifier.weight(2f),
-                singleLine = true
-            )
+                    OutlinedTextField(
+                        value = uiState.valueInput,
+                        onValueChange = onValueChange,
+                        label = { Text("배열 요소 (ex: 1,2,3)") },
+                        modifier = Modifier.weight(2f),
+                        singleLine = true
+                    )
+                }
+                ArrayOperation.ACCESS_ELEMENTAL -> {
+                    OutlinedTextField(
+                        value = uiState.indexInput,
+                        onValueChange = onIndexChange,
+                        label = { Text("인덱스") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                }
+                else -> {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -258,6 +276,7 @@ fun ArrayScreenPreview() {
         onTypeChange = {},
         onSizeChange = {},
         onValueChange = {},
+        onIndexChange = {},
         onOperationChange = {},
         onExecute = {},
         onMessageShow = {},
