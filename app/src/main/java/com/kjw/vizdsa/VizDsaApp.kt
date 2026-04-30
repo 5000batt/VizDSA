@@ -56,7 +56,8 @@ fun VizDsaApp() {
                     onValueChange = viewModel::updateValueInput,
                     onOperationChange = viewModel::updateOperation,
                     onExecute = viewModel::executeOperation,
-                    onMessageShow = viewModel::clearMessage
+                    onMessageShow = viewModel::clearMessage,
+                    onReset = viewModel::resetState
                 )
             }
         }

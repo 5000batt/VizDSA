@@ -20,6 +20,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,7 +49,8 @@ fun ArrayScreen(
     onValueChange: (String) -> Unit,
     onOperationChange: (ArrayOperation) -> Unit,
     onExecute: () -> Unit,
-    onMessageShow: () -> Unit
+    onMessageShow: () -> Unit,
+    onReset: () -> Unit
 ) {
     val context = LocalContext.current
     LaunchedEffect(uiState.message) {
@@ -213,13 +215,27 @@ fun ArrayScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // 하단: 실행 버튼 영역
-        Button(
-            onClick = onExecute,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("실행", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Button(
+                onClick = onExecute,
+                modifier = Modifier
+                    .weight(2f)
+                    .height(56.dp)
+            ) {
+                Text("실행", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            }
+
+            OutlinedButton(
+                onClick = onReset,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(56.dp)
+            ) {
+                Text("리셋", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -244,6 +260,7 @@ fun ArrayScreenPreview() {
         onValueChange = {},
         onOperationChange = {},
         onExecute = {},
-        onMessageShow = {}
+        onMessageShow = {},
+        onReset = {}
     )
 }

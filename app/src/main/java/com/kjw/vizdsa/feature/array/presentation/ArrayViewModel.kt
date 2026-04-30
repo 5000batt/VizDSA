@@ -53,6 +53,11 @@ class ArrayViewModel @Inject constructor(
         _uiState.update { it.copy(message = "") }
     }
 
+    // 리셋
+    fun resetState() {
+        _uiState.value = ArrayUiState()
+    }
+
     // 배열 초기화
     private fun executeInitialize() {
         val currentState = _uiState.value
