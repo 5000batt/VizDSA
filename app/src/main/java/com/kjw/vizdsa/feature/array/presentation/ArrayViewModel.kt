@@ -3,6 +3,7 @@ package com.kjw.vizdsa.feature.array.presentation
 import androidx.lifecycle.ViewModel
 import com.kjw.vizdsa.feature.array.domain.usecase.AccessElementUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.InitializeArrayUseCase
+import com.kjw.vizdsa.feature.array.domain.usecase.UpdateElementUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +15,7 @@ import javax.inject.Inject
 class ArrayViewModel @Inject constructor(
     private val initializeArrayUseCase: InitializeArrayUseCase,
     private val accessElementUseCase: AccessElementUseCase,
+    private val updateElementUseCase: UpdateElementUseCase
 ) : ViewModel() {
 
     // 상태 관리
@@ -50,7 +52,8 @@ class ArrayViewModel @Inject constructor(
     fun executeOperation() {
         when (_uiState.value.operation) {
             ArrayOperation.INITIALIZE -> executeInitialize()
-            ArrayOperation.ACCESS_ELEMENTAL -> executeUpdate()
+            ArrayOperation.ACCESS_ELEMENTAL -> executeAccess()
+            ArrayOperation.UPDATE_ELEMENTAL -> executeUpdate()
             // 나중에 INSERT 등 추가 예쩡
             else -> {}
         }
@@ -104,7 +107,7 @@ class ArrayViewModel @Inject constructor(
     }
 
     // 배열 요소 접근
-    private fun executeUpdate() {
+    private fun executeAccess() {
         val currentState = _uiState.value
         val parsedIndex = currentState.indexInput.toIntOrNull()
 
@@ -136,6 +139,53 @@ class ArrayViewModel @Inject constructor(
                     it.copy(
                         highlightedIndex = null,
                         message = exception.message ?: "접근에 실패했습니다."
+                    )
+                }
+            }
+    }
+
+    // 배열 요소 수정
+    private fun executeUpdate() {
+        val currentState = _uiState.value
+        val parsedIndex = currentState.indexInput.toIntOrNull()
+        val parsedValue = currentState.valueInput.toIntOrNull()
+
+        if (parsedIndex == null) {
+            _uiState.update {
+                it.copy(
+                    highlightedIndex = null,
+                    message = "올바른 인덱스(숫자)를 입력해주세요."
+                )
+            }
+            return
+        }
+
+        if (parsedValue == null) {
+            _uiState.update {
+                it.copy(
+                    highlightedIndex = null,
+                    message = "올바른 값(숫자)을 입력해주세요."
+                )
+            }
+            return
+        }
+
+        updateElementUseCase(currentState.array, parsedIndex, parsedValue)
+            .onSuccess { updatedArray ->
+                _uiState.update {
+                    it.copy(
+                        highlightedIndex = parsedIndex,
+                        array = updatedArray,
+                        message = "인덱스 [$parsedIndex]의 값을 ${parsedValue}로 수정했습니다."
+                    )
+                }
+            }
+
+            .onFailure { exception ->
+                _uiState.update {
+                    it.copy(
+                        highlightedIndex = null,
+                        message = exception.message ?: "수정에 실패했습니다."
                     )
                 }
             }

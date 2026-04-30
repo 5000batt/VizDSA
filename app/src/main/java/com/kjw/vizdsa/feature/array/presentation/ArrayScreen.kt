@@ -174,6 +174,24 @@ fun ArrayScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                 }
+                ArrayOperation.UPDATE_ELEMENTAL -> {
+                    OutlinedTextField(
+                        value = uiState.indexInput,
+                        onValueChange = onIndexChange,
+                        label = { Text("인덱스") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                    OutlinedTextField(
+                        value = uiState.valueInput,
+                        onValueChange = onValueChange,
+                        label = { Text("값") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                }
                 else -> {
                     Spacer(modifier = Modifier.weight(1f))
                 }
