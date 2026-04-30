@@ -51,10 +51,12 @@ fun VizDsaApp() {
 
                 ArrayScreen(
                     uiState = uiState,
+                    onTypeChange = viewModel::updateArrayType,
                     onSizeChange = viewModel::updateSizeInput,
                     onValueChange = viewModel::updateValueInput,
                     onOperationChange = viewModel::updateOperation,
-                    onExecute = viewModel::executeOperation
+                    onExecute = viewModel::executeOperation,
+                    onMessageShow = viewModel::clearMessage
                 )
             }
         }

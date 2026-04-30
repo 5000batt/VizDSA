@@ -19,6 +19,11 @@ class ArrayViewModel @Inject constructor(
     val uiState: StateFlow<ArrayUiState> = _uiState.asStateFlow()
 
     // UI 입력 처리
+    // 배열 타입 선택
+    fun updateArrayType(type: ArrayType) {
+        _uiState.update { it.copy(type = type) }
+    }
+
     // 배열 크기 입력
     fun updateSizeInput(size: String) {
         _uiState.update { it.copy(sizeInput = size) }
@@ -41,6 +46,11 @@ class ArrayViewModel @Inject constructor(
             // 나중에 INSERT 등 추가 예쩡
             else -> {}
         }
+    }
+
+    // 메세지 초기화
+    fun clearMessage() {
+        _uiState.update { it.copy(message = "") }
     }
 
     // 배열 초기화
