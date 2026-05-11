@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.text.KeyboardOptions
@@ -38,7 +37,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kjw.vizdsa.feature.array.presentation.components.ArrayCell
+import com.kjw.vizdsa.core.ui.components.CommonCell
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -230,7 +229,7 @@ fun ArrayScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 itemsIndexed(uiState.array) { index, value ->
-                    ArrayCell(
+                    CommonCell(
                         index = index,
                         value = value,
                         isHighlighted = index == uiState.highlightedIndex
