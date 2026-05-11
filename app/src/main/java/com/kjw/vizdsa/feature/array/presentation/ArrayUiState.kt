@@ -16,7 +16,7 @@ enum class ArrayOperation {
 }
 
 data class ArrayUiState(
-    val array: List<Int?> = emptyList(),                            // 현재 배열 상태
+    val array: Array<Int?> = emptyArray(),                          // 현재 배열 상태
     val sizeInput: String = "",                                     // 배열 크기
     val type: ArrayType? = ArrayType.STATIC,                        // 배열 타입
     val operation: ArrayOperation? = ArrayOperation.INITIALIZE,     // 배열 동작

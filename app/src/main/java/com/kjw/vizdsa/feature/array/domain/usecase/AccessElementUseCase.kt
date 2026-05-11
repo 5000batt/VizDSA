@@ -3,7 +3,7 @@ package com.kjw.vizdsa.feature.array.domain.usecase
 import javax.inject.Inject
 
 class AccessElementUseCase @Inject constructor() {
-    operator fun invoke(array: List<Int?>, index: Int): Result<Pair<Int, Int?>> {
+    operator fun invoke(array: Array<Int?>, index: Int): Result<Pair<Int, Int?>> {
 
         // 배열 존재 여부 확인
         if (array.isEmpty()) {

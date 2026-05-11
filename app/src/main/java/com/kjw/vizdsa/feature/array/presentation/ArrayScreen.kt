@@ -284,7 +284,7 @@ fun ArrayScreenPreview() {
     // 미리보기를 위한 가짜(Dummy) 데이터와 빈 함수들을 넣어줍니다.
     ArrayScreen(
         uiState = ArrayUiState(
-            array = listOf(10, 20, 30, null, null, 40, 50, 60, 70), // 가짜 배열 데이터
+            array = arrayOf(10, 20, 30, null, null, 40, 50, 60, 70), // 가짜 배열 데이터
             sizeInput = "10",
             operation = ArrayOperation.INITIALIZE,
             valueInput = "10, 20, 30",

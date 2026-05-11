@@ -3,7 +3,7 @@ package com.kjw.vizdsa.feature.array.domain.usecase
 import javax.inject.Inject
 
 class UpdateElementUseCase @Inject constructor() {
-    operator fun invoke(array: List<Int?>, index: Int, newValue: Int): Result<List<Int?>> {
+    operator fun invoke(array: Array<Int?>, index: Int, newValue: Int): Result<Array<Int?>> {
 
         // 배열 존재 여부 확인
         if (array.isEmpty()) {
@@ -15,14 +15,8 @@ class UpdateElementUseCase @Inject constructor() {
             return Result.failure(IllegalArgumentException("인덱스가 배열 범위를 벗어났습니다."))
         }
 
-        /*
-        실제 자료구조에서는 0(1)로 해당 메모리만 덮어씌지만,
-        Jetpack Compose가 상태 변화를 감지(Recomposition)할 수 있도록
-        새로운 배열 객체를 복사하여 반환합니다.
-        */
-        val updatedArray = array.toMutableList()
-        updatedArray[index] = newValue
+        array[index] = newValue
 
-        return Result.success(updatedArray)
+        return Result.success(array)
     }
 }

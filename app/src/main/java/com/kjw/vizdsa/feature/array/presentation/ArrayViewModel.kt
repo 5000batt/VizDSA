@@ -90,6 +90,7 @@ class ArrayViewModel @Inject constructor(
             .onSuccess { initializedArray ->
                 _uiState.update {
                     it.copy(
+                        highlightedIndex = null,
                         array = initializedArray,
                         message = "배열을 초기화했습니다."
                     )
@@ -98,7 +99,7 @@ class ArrayViewModel @Inject constructor(
             .onFailure { exception ->
                 _uiState.update {
                     it.copy(
-                        array = emptyList(),
+                        array = emptyArray(),
                         message = exception.message ?: "배열 초기화에 실패했습니다."
                     )
                 }
