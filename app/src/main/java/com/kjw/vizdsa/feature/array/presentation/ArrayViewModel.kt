@@ -45,7 +45,13 @@ class ArrayViewModel @Inject constructor(
 
     // 배열 동작 입력
     fun updateOperation(operation: ArrayOperation) {
-        _uiState.update { it.copy(operation = operation) }
+        _uiState.update { it.copy(
+            operation = operation,
+            sizeInput = "",
+            valueInput = "",
+            indexInput = "",
+            highlightedIndex = null
+        ) }
     }
 
     // 실행 버튼
