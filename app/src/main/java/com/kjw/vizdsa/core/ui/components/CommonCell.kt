@@ -1,5 +1,6 @@
 package com.kjw.vizdsa.core.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,9 +17,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +43,7 @@ fun CommonCell(
         else -> MaterialTheme.colorScheme.primary
     }
     val textColor = if (value == null) Color.Transparent else Color.White
+    val scale by animateFloatAsState(targetValue = if (isHighlighted) 1.1f else 1f)
 
     Column(
         modifier = modifier.padding(2.dp),
@@ -49,6 +53,7 @@ fun CommonCell(
             modifier = Modifier
                 .fillMaxWidth()
                 .then(if (boxRatio != null) Modifier.aspectRatio(boxRatio) else Modifier)
+                .scale(scale)
                 .shadow(elevation = 4.dp, shape = RoundedCornerShape(8.dp))
                 .clip(RoundedCornerShape(8.dp))
                 .background(color = boxColor),
