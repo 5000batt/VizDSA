@@ -192,6 +192,16 @@ fun ArrayScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                 }
+                ArrayOperation.LINEAR_SEARCH -> {
+                    OutlinedTextField(
+                        value = uiState.valueInput,
+                        onValueChange = onValueChange,
+                        label = { Text("값") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                }
                 else -> {
                     Spacer(modifier = Modifier.weight(1f))
                 }

@@ -3,6 +3,7 @@ package com.kjw.vizdsa.feature.array.presentation
 import androidx.lifecycle.ViewModel
 import com.kjw.vizdsa.feature.array.domain.usecase.AccessElementUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.InitializeArrayUseCase
+import com.kjw.vizdsa.feature.array.domain.usecase.LinearSearchUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.UpdateElementUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,8 @@ import javax.inject.Inject
 class ArrayViewModel @Inject constructor(
     private val initializeArrayUseCase: InitializeArrayUseCase,
     private val accessElementUseCase: AccessElementUseCase,
-    private val updateElementUseCase: UpdateElementUseCase
+    private val updateElementUseCase: UpdateElementUseCase,
+    private val linearSearchUseCase: LinearSearchUseCase
 ) : ViewModel() {
 
     // 상태 관리
@@ -60,7 +62,8 @@ class ArrayViewModel @Inject constructor(
             ArrayOperation.INITIALIZE -> executeInitialize()
             ArrayOperation.ACCESS_ELEMENTAL -> executeAccess()
             ArrayOperation.UPDATE_ELEMENTAL -> executeUpdate()
-            // 나중에 INSERT 등 추가 예쩡
+            ArrayOperation.LINEAR_SEARCH -> executeLinearSearch()
+            // 나중에 INSERT 등 추가 예정
             else -> {}
         }
     }
@@ -196,5 +199,41 @@ class ArrayViewModel @Inject constructor(
                     )
                 }
             }
+    }
+
+    // 선형 탐색(순차 검색)
+    private fun executeLinearSearch() {
+        val currentState = _uiState.value
+        val parsedValue = currentState.valueInput.toIntOrNull()
+
+        if (parsedValue == null) {
+            _uiState.update {
+                it.copy(
+                    highlightedIndex = null,
+                    message = "올바른 값(숫자)을 입력해주세요."
+                )
+            }
+            return
+        }
+
+        linearSearchUseCase(currentState.array, parsedValue)
+            .onSuccess { index ->
+                _uiState.update {
+                    it.copy(
+                        highlightedIndex = index,
+                        message = "값 ${parsedValue}를 찾았습니다. 인덱스: $index"
+                    )
+                }
+            }
+
+            .onFailure { exception ->
+                _uiState.update {
+                    it.copy(
+                        highlightedIndex = null,
+                        message = exception.message ?: "선형 탐색에 실패했습니다."
+                    )
+                }
+            }
+
     }
 }
