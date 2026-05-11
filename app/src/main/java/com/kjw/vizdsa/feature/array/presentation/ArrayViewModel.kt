@@ -1,15 +1,18 @@
 package com.kjw.vizdsa.feature.array.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.kjw.vizdsa.feature.array.domain.usecase.AccessElementUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.InitializeArrayUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.LinearSearchUseCase
+import com.kjw.vizdsa.feature.array.domain.usecase.SearchStep
 import com.kjw.vizdsa.feature.array.domain.usecase.UpdateElementUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -216,24 +219,47 @@ class ArrayViewModel @Inject constructor(
             return
         }
 
-        linearSearchUseCase(currentState.array, parsedValue)
-            .onSuccess { index ->
-                _uiState.update {
-                    it.copy(
-                        highlightedIndex = index,
-                        message = "값 ${parsedValue}를 찾았습니다. 인덱스: $index"
-                    )
-                }
-            }
+        viewModelScope.launch {
+            linearSearchUseCase(currentState.array, parsedValue).collect { step ->
+                when (step) {
+                    is SearchStep.Checking -> {
+                        _uiState.update {
+                            it.copy(
+                                highlightedIndex = step.index
+                            )
+                        }
+                    }
 
-            .onFailure { exception ->
-                _uiState.update {
-                    it.copy(
-                        highlightedIndex = null,
-                        message = exception.message ?: "선형 탐색에 실패했습니다."
-                    )
+                    is SearchStep.Found -> {
+                        _uiState.update {
+                            it.copy(
+                                highlightedIndex = step.index,
+                                message = "값 ${parsedValue}를 찾았습니다. 인덱스: ${step.index}"
+
+                            )
+                        }
+                    }
+
+                    is SearchStep.NotFound -> {
+                        _uiState.update {
+                            it.copy(
+                                highlightedIndex = null,
+                                message = "${parsedValue}은(는) 배열에 존재하지 않습니다."
+                            )
+                        }
+                    }
+
+                    is SearchStep.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                highlightedIndex = null,
+                                message = step.message
+                            )
+                        }
+                    }
                 }
             }
+        }
 
     }
 }

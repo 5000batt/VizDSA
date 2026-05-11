@@ -1,20 +1,38 @@
 package com.kjw.vizdsa.feature.array.domain.usecase
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
+sealed class SearchStep {
+    data class Error(val message: String) : SearchStep()
+    data class Checking(val index: Int) : SearchStep()
+    data class Found(val index: Int) : SearchStep()
+    object NotFound : SearchStep()
+}
+
 class LinearSearchUseCase @Inject constructor() {
-    operator fun invoke(array: Array<Int?>, target: Int): Result<Int> {
+    operator fun invoke(array: Array<Int?>, target: Int): Flow<SearchStep> = flow {
 
         // 배열 존재 여부 확인
         if (array.isEmpty()) {
-            return Result.failure(IllegalArgumentException("먼저 배열을 초기화해주세요."))
+            emit(SearchStep.Error("먼저 배열을 초기화해주세요."))
+            return@flow
         }
 
         for (i in array.indices) {
+            emit(SearchStep.Checking(i))
+
+            delay(500L)
+
             if (array[i] == target) {
-                return Result.success(i)
+                emit(SearchStep.Found(i))
+                return@flow
             }
         }
+
+        emit(SearchStep.NotFound)
 
         /*
         withIndex() 방식
@@ -24,8 +42,6 @@ class LinearSearchUseCase @Inject constructor() {
             }
         }
         */
-
-        return Result.failure(IllegalArgumentException("${target}은 배열에 존재하지 않습니다."))
 
         /*
         코틀린 확장 함수 사용
