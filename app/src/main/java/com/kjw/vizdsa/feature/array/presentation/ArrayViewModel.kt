@@ -2,10 +2,11 @@ package com.kjw.vizdsa.feature.array.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kjw.vizdsa.core.domain.model.AlgorithmStep
 import com.kjw.vizdsa.feature.array.domain.usecase.AccessElementUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.InitializeArrayUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.LinearSearchUseCase
-import com.kjw.vizdsa.feature.array.domain.usecase.SearchStep
+import com.kjw.vizdsa.feature.array.domain.usecase.TraverseArrayUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.UpdateElementUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,8 @@ class ArrayViewModel @Inject constructor(
     private val initializeArrayUseCase: InitializeArrayUseCase,
     private val accessElementUseCase: AccessElementUseCase,
     private val updateElementUseCase: UpdateElementUseCase,
-    private val linearSearchUseCase: LinearSearchUseCase
+    private val linearSearchUseCase: LinearSearchUseCase,
+    private val traverseArrayUseCase: TraverseArrayUseCase
 ) : ViewModel() {
 
     // 상태 관리
@@ -66,6 +68,7 @@ class ArrayViewModel @Inject constructor(
             ArrayOperation.ACCESS_ELEMENTAL -> executeAccess()
             ArrayOperation.UPDATE_ELEMENTAL -> executeUpdate()
             ArrayOperation.LINEAR_SEARCH -> executeLinearSearch()
+            ArrayOperation.TRAVERSE_ARRAY -> executeTraverse()
             // 나중에 INSERT 등 추가 예정
             else -> {}
         }
@@ -222,7 +225,7 @@ class ArrayViewModel @Inject constructor(
         viewModelScope.launch {
             linearSearchUseCase(currentState.array, parsedValue).collect { step ->
                 when (step) {
-                    is SearchStep.Checking -> {
+                    is AlgorithmStep.Checking -> {
                         _uiState.update {
                             it.copy(
                                 highlightedIndex = step.index
@@ -230,7 +233,7 @@ class ArrayViewModel @Inject constructor(
                         }
                     }
 
-                    is SearchStep.Found -> {
+                    is AlgorithmStep.Found -> {
                         _uiState.update {
                             it.copy(
                                 highlightedIndex = step.index,
@@ -240,7 +243,7 @@ class ArrayViewModel @Inject constructor(
                         }
                     }
 
-                    is SearchStep.NotFound -> {
+                    is AlgorithmStep.NotFound -> {
                         _uiState.update {
                             it.copy(
                                 highlightedIndex = null,
@@ -249,7 +252,7 @@ class ArrayViewModel @Inject constructor(
                         }
                     }
 
-                    is SearchStep.Error -> {
+                    is AlgorithmStep.Error -> {
                         _uiState.update {
                             it.copy(
                                 highlightedIndex = null,
@@ -257,9 +260,50 @@ class ArrayViewModel @Inject constructor(
                             )
                         }
                     }
+
+                    is AlgorithmStep.Done -> {}
                 }
             }
         }
+    }
 
+    // 배열 순회
+    private fun executeTraverse() {
+        val currentState = _uiState.value
+
+        viewModelScope.launch {
+            traverseArrayUseCase(currentState.array).collect { step ->
+                when(step) {
+                    is AlgorithmStep.Checking -> {
+                        _uiState.update {
+                            it.copy(
+                                highlightedIndex = step.index
+                            )
+                        }
+                    }
+
+                    is AlgorithmStep.Done -> {
+                        _uiState.update {
+                            it.copy(
+                                highlightedIndex = null,
+                                message = "배열 순회를 완료했습니다."
+                            )
+                        }
+                    }
+
+                    is AlgorithmStep.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                highlightedIndex = null,
+                                message = step.message
+                            )
+                        }
+                    }
+
+                    is AlgorithmStep.Found -> {}
+                    is AlgorithmStep.NotFound -> {}
+                }
+            }
+        }
     }
 }

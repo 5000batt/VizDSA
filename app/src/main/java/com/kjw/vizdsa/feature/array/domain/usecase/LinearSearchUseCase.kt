@@ -1,38 +1,32 @@
 package com.kjw.vizdsa.feature.array.domain.usecase
 
+import com.kjw.vizdsa.core.domain.model.AlgorithmStep
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-sealed class SearchStep {
-    data class Error(val message: String) : SearchStep()
-    data class Checking(val index: Int) : SearchStep()
-    data class Found(val index: Int) : SearchStep()
-    object NotFound : SearchStep()
-}
-
 class LinearSearchUseCase @Inject constructor() {
-    operator fun invoke(array: Array<Int?>, target: Int): Flow<SearchStep> = flow {
+    operator fun invoke(array: Array<Int?>, target: Int): Flow<AlgorithmStep> = flow {
 
         // 배열 존재 여부 확인
         if (array.isEmpty()) {
-            emit(SearchStep.Error("먼저 배열을 초기화해주세요."))
+            emit(AlgorithmStep.Error("먼저 배열을 초기화해주세요."))
             return@flow
         }
 
         for (i in array.indices) {
-            emit(SearchStep.Checking(i))
+            emit(AlgorithmStep.Checking(i))
 
             delay(500L)
 
             if (array[i] == target) {
-                emit(SearchStep.Found(i))
+                emit(AlgorithmStep.Found(i))
                 return@flow
             }
         }
 
-        emit(SearchStep.NotFound)
+        emit(AlgorithmStep.NotFound)
 
         /*
         withIndex() 방식
