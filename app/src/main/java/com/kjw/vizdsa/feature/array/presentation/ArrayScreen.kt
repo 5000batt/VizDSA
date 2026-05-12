@@ -37,6 +37,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kjw.vizdsa.core.ui.components.ActionButton
+import com.kjw.vizdsa.core.ui.components.CommonBottomBar
 import com.kjw.vizdsa.core.ui.components.CommonCell
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -260,30 +262,12 @@ fun ArrayScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // 하단: 실행 버튼 영역
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Button(
-                onClick = onExecute,
-                modifier = Modifier
-                    .weight(2f)
-                    .height(56.dp)
-            ) {
-                Text("실행", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            }
-
-            OutlinedButton(
-                onClick = onReset,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(56.dp)
-            ) {
-                Text("리셋", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
+        CommonBottomBar(
+            listOf(
+                ActionButton(text = "실행", isPrimary = true, weight = 2f, onClick = onExecute),
+                ActionButton(text = "리셋", isPrimary = false, weight = 1f, onClick = onReset)
+            )
+        )
     }
 }
 
