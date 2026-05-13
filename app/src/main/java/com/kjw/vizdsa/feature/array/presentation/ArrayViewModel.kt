@@ -366,6 +366,15 @@ class ArrayViewModel @Inject constructor(
                         }
                     }
 
+                    is AlgorithmStep.Done -> {
+                        _uiState.update {
+                            it.copy(
+                                highlightedIndex = null,
+                                message = "인덱스 [$parsedIndex]에 $parsedValue 삽입이 완료되었습니다."
+                            )
+                        }
+                    }
+
                     is AlgorithmStep.Error -> {
                         _uiState.update {
                             it.copy(

@@ -51,5 +51,8 @@ class InsertElementUseCase @Inject constructor() {
 
         // 새로운 값 삽입 명령 방출
         emit(AlgorithmStep.ValueUpdated(targetIndex, insertValue))
+
+        delay(500L)
+        emit(AlgorithmStep.Done)
     }
 }
