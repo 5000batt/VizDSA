@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kjw.vizdsa.core.domain.model.AlgorithmStep
 import com.kjw.vizdsa.feature.array.domain.usecase.AccessElementUseCase
+import com.kjw.vizdsa.feature.array.domain.usecase.DeleteElementUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.InitializeArrayUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.InsertElementUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.LinearSearchUseCase
@@ -25,6 +26,7 @@ class ArrayViewModel @Inject constructor(
     private val linearSearchUseCase: LinearSearchUseCase,
     private val traverseArrayUseCase: TraverseArrayUseCase,
     private val insertElementUseCase: InsertElementUseCase,
+    private val deleteElementUseCase: DeleteElementUseCase
 ) : ViewModel() {
 
     // 상태 관리
@@ -72,7 +74,7 @@ class ArrayViewModel @Inject constructor(
             ArrayOperation.LINEAR_SEARCH -> executeLinearSearch()
             ArrayOperation.TRAVERSE_ARRAY -> executeTraverse()
             ArrayOperation.INSERT_ELEMENTAL -> executeInsert()
-            // 나중에 INSERT 등 추가 예정
+            ArrayOperation.DELETE_ELEMENTAL -> executeDelete()
             else -> {}
         }
     }
@@ -264,9 +266,9 @@ class ArrayViewModel @Inject constructor(
                         }
                     }
 
-                    is AlgorithmStep.Done -> TODO()
-                    is AlgorithmStep.Moved -> TODO()
-                    is AlgorithmStep.ValueUpdated -> TODO()
+                    is AlgorithmStep.Done -> {}
+                    is AlgorithmStep.Moved -> {}
+                    is AlgorithmStep.ValueUpdated -> {}
                 }
             }
         }
@@ -305,10 +307,10 @@ class ArrayViewModel @Inject constructor(
                         }
                     }
 
-                    is AlgorithmStep.Found -> TODO()
-                    is AlgorithmStep.NotFound -> TODO()
-                    is AlgorithmStep.Moved -> TODO()
-                    is AlgorithmStep.ValueUpdated -> TODO()
+                    is AlgorithmStep.Found -> {}
+                    is AlgorithmStep.NotFound -> {}
+                    is AlgorithmStep.Moved -> {}
+                    is AlgorithmStep.ValueUpdated -> {}
                 }
             }
         }
@@ -384,10 +386,80 @@ class ArrayViewModel @Inject constructor(
                         }
                     }
 
-                    is AlgorithmStep.Checking -> TODO()
-                    is AlgorithmStep.Done -> TODO()
-                    is AlgorithmStep.Found -> TODO()
-                    is AlgorithmStep.NotFound -> TODO()
+                    is AlgorithmStep.Checking -> {}
+                    is AlgorithmStep.Found -> {}
+                    is AlgorithmStep.NotFound -> {}
+                }
+            }
+        }
+    }
+
+    private fun executeDelete() {
+        val currentState = _uiState.value
+        val parsedIndex = currentState.indexInput.toIntOrNull()
+
+        if (parsedIndex == null) {
+            _uiState.update {
+                it.copy(
+                    highlightedIndex = null,
+                    message = "올바른 인덱스(숫자)를 입력해주세요."
+                )
+            }
+            return
+        }
+
+        viewModelScope.launch {
+            deleteElementUseCase(currentState.array, parsedIndex).collect { step ->
+                when (step) {
+                    is AlgorithmStep.ValueUpdated -> {
+                        val newArray = _uiState.value.array.clone()
+
+                        newArray[parsedIndex] = step.newValue
+
+                        _uiState.update {
+                            it.copy(
+                                array = newArray,
+                                highlightedIndex = parsedIndex
+                            )
+                        }
+                    }
+
+                    is AlgorithmStep.Moved -> {
+                        val newArray = _uiState.value.array.clone()
+
+                        newArray[step.toIndex] = newArray[step.fromIndex]
+
+                        newArray[step.fromIndex] = null
+
+                        _uiState.update {
+                            it.copy(
+                                array = newArray,
+                                highlightedIndex = step.toIndex
+                            )
+                        }
+                    }
+
+                    is AlgorithmStep.Done -> {
+                        _uiState.update {
+                            it.copy(
+                                highlightedIndex = null,
+                                message = "인덱스 [$parsedIndex]의 삭제가 완료되었습니다."
+                            )
+                        }
+                    }
+
+                    is AlgorithmStep.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                highlightedIndex = null,
+                                message = step.message
+                            )
+                        }
+                    }
+
+                    is AlgorithmStep.Checking -> {}
+                    is AlgorithmStep.Found -> {}
+                    is AlgorithmStep.NotFound -> {}
                 }
             }
         }

@@ -43,7 +43,7 @@ class InsertElementUseCase @Inject constructor() {
 
         // Shift 연산 (뒤에서부터 한 칸씩 당겨오며 이동 명령 방출)
         for (i in (array.size - 2) downTo targetIndex) {
-            if(array[i] != null) {
+            if (array[i] != null) {
                 emit(AlgorithmStep.Moved(i, i + 1))
                 delay(500L)
             }
