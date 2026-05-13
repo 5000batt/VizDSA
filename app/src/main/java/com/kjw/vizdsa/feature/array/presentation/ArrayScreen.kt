@@ -163,7 +163,7 @@ fun ArrayScreen(
                         singleLine = true
                     )
                 }
-                ArrayOperation.ACCESS_ELEMENTAL -> {
+                ArrayOperation.ACCESS_ELEMENT -> {
                     OutlinedTextField(
                         value = uiState.indexInput,
                         onValueChange = onIndexChange,
@@ -173,7 +173,7 @@ fun ArrayScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                 }
-                ArrayOperation.UPDATE_ELEMENTAL -> {
+                ArrayOperation.UPDATE_ELEMENT -> {
                     OutlinedTextField(
                         value = uiState.indexInput,
                         onValueChange = onIndexChange,
@@ -201,7 +201,7 @@ fun ArrayScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                 }
-                ArrayOperation.INSERT_ELEMENTAL -> {
+                ArrayOperation.INSERT_ELEMENT -> {
                     OutlinedTextField(
                         value = uiState.indexInput,
                         onValueChange = onIndexChange,
@@ -219,7 +219,7 @@ fun ArrayScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                 }
-                ArrayOperation.DELETE_ELEMENTAL -> {
+                ArrayOperation.DELETE_ELEMENT -> {
                     OutlinedTextField(
                         value = uiState.indexInput,
                         onValueChange = onIndexChange,

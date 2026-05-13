@@ -7,12 +7,12 @@ enum class ArrayType {
 
 enum class ArrayOperation {
     INITIALIZE,         // 초기화
-    ACCESS_ELEMENTAL,   // 접근
-    UPDATE_ELEMENTAL,   // 수정
+    ACCESS_ELEMENT,   // 접근
+    UPDATE_ELEMENT,   // 수정
     LINEAR_SEARCH,      // 선형 탐색
     TRAVERSE_ARRAY,     // 전체 순회
-    INSERT_ELEMENTAL,   // 삽입
-    DELETE_ELEMENTAL    // 삭제
+    INSERT_ELEMENT,   // 삽입
+    DELETE_ELEMENT    // 삭제
 }
 
 data class ArrayUiState(

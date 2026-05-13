@@ -69,12 +69,12 @@ class ArrayViewModel @Inject constructor(
     fun executeOperation() {
         when (_uiState.value.operation) {
             ArrayOperation.INITIALIZE -> executeInitialize()
-            ArrayOperation.ACCESS_ELEMENTAL -> executeAccess()
-            ArrayOperation.UPDATE_ELEMENTAL -> executeUpdate()
+            ArrayOperation.ACCESS_ELEMENT -> executeAccess()
+            ArrayOperation.UPDATE_ELEMENT -> executeUpdate()
             ArrayOperation.LINEAR_SEARCH -> executeLinearSearch()
             ArrayOperation.TRAVERSE_ARRAY -> executeTraverse()
-            ArrayOperation.INSERT_ELEMENTAL -> executeInsert()
-            ArrayOperation.DELETE_ELEMENTAL -> executeDelete()
+            ArrayOperation.INSERT_ELEMENT -> executeInsert()
+            ArrayOperation.DELETE_ELEMENT -> executeDelete()
             else -> {}
         }
     }
