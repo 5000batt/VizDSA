@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.kjw.vizdsa.core.domain.model.AlgorithmStep
 import com.kjw.vizdsa.feature.array.domain.usecase.AccessElementUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.InitializeArrayUseCase
+import com.kjw.vizdsa.feature.array.domain.usecase.InsertElementUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.LinearSearchUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.TraverseArrayUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.UpdateElementUseCase
@@ -22,7 +23,8 @@ class ArrayViewModel @Inject constructor(
     private val accessElementUseCase: AccessElementUseCase,
     private val updateElementUseCase: UpdateElementUseCase,
     private val linearSearchUseCase: LinearSearchUseCase,
-    private val traverseArrayUseCase: TraverseArrayUseCase
+    private val traverseArrayUseCase: TraverseArrayUseCase,
+    private val insertElementUseCase: InsertElementUseCase,
 ) : ViewModel() {
 
     // 상태 관리
@@ -69,6 +71,7 @@ class ArrayViewModel @Inject constructor(
             ArrayOperation.UPDATE_ELEMENTAL -> executeUpdate()
             ArrayOperation.LINEAR_SEARCH -> executeLinearSearch()
             ArrayOperation.TRAVERSE_ARRAY -> executeTraverse()
+            ArrayOperation.INSERT_ELEMENTAL -> executeInsert()
             // 나중에 INSERT 등 추가 예정
             else -> {}
         }
@@ -261,7 +264,9 @@ class ArrayViewModel @Inject constructor(
                         }
                     }
 
-                    is AlgorithmStep.Done -> {}
+                    is AlgorithmStep.Done -> TODO()
+                    is AlgorithmStep.Moved -> TODO()
+                    is AlgorithmStep.ValueUpdated -> TODO()
                 }
             }
         }
@@ -300,8 +305,80 @@ class ArrayViewModel @Inject constructor(
                         }
                     }
 
-                    is AlgorithmStep.Found -> {}
-                    is AlgorithmStep.NotFound -> {}
+                    is AlgorithmStep.Found -> TODO()
+                    is AlgorithmStep.NotFound -> TODO()
+                    is AlgorithmStep.Moved -> TODO()
+                    is AlgorithmStep.ValueUpdated -> TODO()
+                }
+            }
+        }
+    }
+
+    private fun executeInsert() {
+        val currentState = _uiState.value
+        val parsedIndex = currentState.indexInput.toIntOrNull()
+        val parsedValue = currentState.valueInput.toIntOrNull()
+
+        if (parsedIndex == null || parsedValue == null) {
+            _uiState.update {
+                it.copy(
+                    highlightedIndex = null,
+                    message = "올바른 인덱스와 값(숫자)을 모두 입력해주세요."
+                )
+            }
+            return
+        }
+
+        viewModelScope.launch {
+            insertElementUseCase(currentState.array, parsedIndex, parsedValue).collect { step ->
+                when (step) {
+                    is AlgorithmStep.Moved -> {
+                        // 기존 배열을 복제(clone)해서 새로운 객체로 만듦
+                        val newArray = _uiState.value.array.clone()
+
+                        // 데이터 한 칸 뒤로 복사
+                        newArray[step.toIndex] = newArray[step.fromIndex]
+
+                        // 기존 자리를 비워두어 빈 공간이 밀려나는 시각적 효과 극대화
+                        newArray[step.fromIndex] = null
+
+                        _uiState.update {
+                            it.copy(
+                                array = newArray,
+                                highlightedIndex = step.toIndex
+                            )
+                        }
+                    }
+
+                    is AlgorithmStep.ValueUpdated -> {
+                        // 기존 배열을 복제(clone)해서 새로운 객체로 만듦
+                        val newArray = _uiState.value.array.clone()
+
+                        // 타겟 인덱스에 새로운 값 덮어쓰기
+                          newArray[step.index] = step.newValue
+
+                        _uiState.update {
+                            it.copy(
+                                array = newArray,
+                                highlightedIndex = step.index,
+                                message = "인덱스 [${step.index}]에 ${step.newValue}를 삽입했습니다."
+                            )
+                        }
+                    }
+
+                    is AlgorithmStep.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                highlightedIndex = null,
+                                message = step.message
+                            )
+                        }
+                    }
+
+                    is AlgorithmStep.Checking -> TODO()
+                    is AlgorithmStep.Done -> TODO()
+                    is AlgorithmStep.Found -> TODO()
+                    is AlgorithmStep.NotFound -> TODO()
                 }
             }
         }

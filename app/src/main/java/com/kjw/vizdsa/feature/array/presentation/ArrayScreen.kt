@@ -14,12 +14,10 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -203,6 +201,24 @@ fun ArrayScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
                 }
+                ArrayOperation.INSERT_ELEMENTAL -> {
+                    OutlinedTextField(
+                        value = uiState.indexInput,
+                        onValueChange = onIndexChange,
+                        label = { Text("인덱스") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                    OutlinedTextField(
+                        value = uiState.valueInput,
+                        onValueChange = onValueChange,
+                        label = { Text("값") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                    )
+                }
                 else -> {
                     Spacer(modifier = Modifier.weight(1f))
                 }
@@ -239,25 +255,6 @@ fun ArrayScreen(
                 }
             }
         }
-
-        // span 테스트 코드
-        /*LazyVerticalGrid(
-            columns = GridCells.Fixed(3)
-        ) {
-            // 1. 전체 너비를 차지하는 헤더 (span 3개 차지)
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                Text("배열 시각화 결과", modifier = Modifier.fillMaxWidth())
-            }
-
-            // 2. 일반적인 데이터 셀 (기본 span 1 차지)
-            itemsIndexed(uiState.array) { index, value ->
-                ArrayCell(
-                    index = index,
-                    value = value,
-                    isHighlighted = index == uiState.highlightedIndex
-                )
-            }
-        }*/
 
         Spacer(modifier = Modifier.height(16.dp))
 
