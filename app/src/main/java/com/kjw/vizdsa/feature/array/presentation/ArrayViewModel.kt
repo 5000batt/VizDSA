@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kjw.vizdsa.core.domain.model.AlgorithmStep
 import com.kjw.vizdsa.feature.array.domain.usecase.AccessElementUseCase
+import com.kjw.vizdsa.feature.array.domain.usecase.DeleteDynamicElementUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.DeleteElementUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.InitializeArrayUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.InsertDynamicElementUseCase
@@ -28,7 +29,8 @@ class ArrayViewModel @Inject constructor(
     private val traverseArrayUseCase: TraverseArrayUseCase,
     private val insertElementUseCase: InsertElementUseCase,
     private val insertDynamicElementUseCase: InsertDynamicElementUseCase,
-    private val deleteElementUseCase: DeleteElementUseCase
+    private val deleteElementUseCase: DeleteElementUseCase,
+    private val deleteDynamicElementUseCase: DeleteDynamicElementUseCase
 ) : ViewModel() {
 
     // 상태 관리
@@ -482,58 +484,125 @@ class ArrayViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            deleteElementUseCase(currentState.array, parsedIndex).collect { step ->
-                when (step) {
-                    is AlgorithmStep.ValueUpdated -> {
-                        val newArray = _uiState.value.array.clone()
+            if (currentState.type == ArrayType.STATIC) {
+                deleteElementUseCase(currentState.array, parsedIndex).collect { step ->
+                    when (step) {
+                        is AlgorithmStep.ValueUpdated -> {
+                            val newArray = _uiState.value.array.clone()
 
-                        newArray[parsedIndex] = step.newValue
+                            newArray[parsedIndex] = step.newValue
 
-                        _uiState.update {
-                            it.copy(
-                                array = newArray,
-                                highlightedIndex = parsedIndex
-                            )
+                            _uiState.update {
+                                it.copy(
+                                    array = newArray,
+                                    highlightedIndex = parsedIndex
+                                )
+                            }
                         }
-                    }
 
-                    is AlgorithmStep.Moved -> {
-                        val newArray = _uiState.value.array.clone()
+                        is AlgorithmStep.Moved -> {
+                            val newArray = _uiState.value.array.clone()
 
-                        newArray[step.toIndex] = newArray[step.fromIndex]
+                            newArray[step.toIndex] = newArray[step.fromIndex]
 
-                        newArray[step.fromIndex] = null
+                            newArray[step.fromIndex] = null
 
-                        _uiState.update {
-                            it.copy(
-                                array = newArray,
-                                highlightedIndex = step.toIndex
-                            )
+                            _uiState.update {
+                                it.copy(
+                                    array = newArray,
+                                    highlightedIndex = step.toIndex
+                                )
+                            }
                         }
-                    }
 
-                    is AlgorithmStep.Done -> {
-                        _uiState.update {
-                            it.copy(
-                                highlightedIndex = null,
-                                message = "인덱스 [$parsedIndex]의 삭제가 완료되었습니다."
-                            )
+                        is AlgorithmStep.Done -> {
+                            _uiState.update {
+                                it.copy(
+                                    highlightedIndex = null,
+                                    message = "인덱스 [$parsedIndex]의 삭제가 완료되었습니다."
+                                )
+                            }
                         }
-                    }
 
-                    is AlgorithmStep.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                highlightedIndex = null,
-                                message = step.message
-                            )
+                        is AlgorithmStep.Error -> {
+                            _uiState.update {
+                                it.copy(
+                                    highlightedIndex = null,
+                                    message = step.message
+                                )
+                            }
                         }
-                    }
 
-                    is AlgorithmStep.Checking -> {}
-                    is AlgorithmStep.Found -> {}
-                    is AlgorithmStep.NotFound -> {}
-                    is AlgorithmStep.Resized -> {}
+                        is AlgorithmStep.Checking -> {}
+                        is AlgorithmStep.Found -> {}
+                        is AlgorithmStep.NotFound -> {}
+                        is AlgorithmStep.Resized -> {}
+                    }
+                }
+            } else if (currentState.type == ArrayType.DYNAMIC) {
+                deleteDynamicElementUseCase(currentState.array, parsedIndex).collect { step ->
+                    when (step) {
+                        is AlgorithmStep.Resized -> {
+                            val newArray = _uiState.value.array.clone().copyOf(step.newSize)
+
+                            _uiState.update {
+                                it.copy(
+                                    array = newArray,
+                                    highlightedIndex = null
+                                )
+                            }
+                        }
+
+                        is AlgorithmStep.ValueUpdated -> {
+                            val newArray = _uiState.value.array.clone()
+
+                            newArray[step.index] = step.newValue
+
+                            _uiState.update {
+                                it.copy(
+                                    array = newArray,
+                                    highlightedIndex = step.index
+                                )
+                            }
+                        }
+
+                        is AlgorithmStep.Moved -> {
+                            val newArray = _uiState.value.array.clone()
+
+                            newArray[step.toIndex] = newArray[step.fromIndex]
+
+                            newArray[step.fromIndex] = null
+
+                            _uiState.update {
+                                it.copy(
+                                    array = newArray,
+                                    highlightedIndex = step.toIndex
+                                )
+                            }
+                        }
+
+                        is AlgorithmStep.Done -> {
+                            _uiState.update {
+                                it.copy(
+                                    highlightedIndex = null,
+                                    message = "동적 배열 삭제가 완료되었습니다."
+                                )
+                            }
+                        }
+
+                        is AlgorithmStep.Error -> {
+                            _uiState.update {
+                                it.copy(
+                                    highlightedIndex = null,
+                                    message = step.message
+                                )
+                            }
+                        }
+
+                        is AlgorithmStep.Checking -> {}
+                        is AlgorithmStep.Found -> {}
+                        is AlgorithmStep.NotFound -> {}
+                    }
                 }
             }
         }
