@@ -6,6 +6,7 @@ import com.kjw.vizdsa.core.domain.model.AlgorithmStep
 import com.kjw.vizdsa.feature.array.domain.usecase.AccessElementUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.DeleteElementUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.InitializeArrayUseCase
+import com.kjw.vizdsa.feature.array.domain.usecase.InsertDynamicElementUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.InsertElementUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.LinearSearchUseCase
 import com.kjw.vizdsa.feature.array.domain.usecase.TraverseArrayUseCase
@@ -26,6 +27,7 @@ class ArrayViewModel @Inject constructor(
     private val linearSearchUseCase: LinearSearchUseCase,
     private val traverseArrayUseCase: TraverseArrayUseCase,
     private val insertElementUseCase: InsertElementUseCase,
+    private val insertDynamicElementUseCase: InsertDynamicElementUseCase,
     private val deleteElementUseCase: DeleteElementUseCase
 ) : ViewModel() {
 
@@ -269,6 +271,7 @@ class ArrayViewModel @Inject constructor(
                     is AlgorithmStep.Done -> {}
                     is AlgorithmStep.Moved -> {}
                     is AlgorithmStep.ValueUpdated -> {}
+                    is AlgorithmStep.Resized -> {}
                 }
             }
         }
@@ -311,6 +314,7 @@ class ArrayViewModel @Inject constructor(
                     is AlgorithmStep.NotFound -> {}
                     is AlgorithmStep.Moved -> {}
                     is AlgorithmStep.ValueUpdated -> {}
+                    is AlgorithmStep.Resized -> {}
                 }
             }
         }
@@ -332,63 +336,132 @@ class ArrayViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            insertElementUseCase(currentState.array, parsedIndex, parsedValue).collect { step ->
-                when (step) {
-                    is AlgorithmStep.Moved -> {
-                        // 기존 배열을 복제(clone)해서 새로운 객체로 만듦
-                        val newArray = _uiState.value.array.clone()
+            if (currentState.type == ArrayType.STATIC) {
+                insertElementUseCase(currentState.array, parsedIndex, parsedValue).collect { step ->
+                    when (step) {
+                        is AlgorithmStep.Moved -> {
+                            // 기존 배열을 복제(clone)해서 새로운 객체로 만듦
+                            val newArray = _uiState.value.array.clone()
 
-                        // 데이터 한 칸 뒤로 복사
-                        newArray[step.toIndex] = newArray[step.fromIndex]
+                            // 데이터 한 칸 뒤로 복사
+                            newArray[step.toIndex] = newArray[step.fromIndex]
 
-                        // 기존 자리를 비워두어 빈 공간이 밀려나는 시각적 효과 극대화
-                        newArray[step.fromIndex] = null
+                            // 기존 자리를 비워두어 빈 공간이 밀려나는 시각적 효과 극대화
+                            newArray[step.fromIndex] = null
 
-                        _uiState.update {
-                            it.copy(
-                                array = newArray,
-                                highlightedIndex = step.toIndex
-                            )
+                            _uiState.update {
+                                it.copy(
+                                    array = newArray,
+                                    highlightedIndex = step.toIndex
+                                )
+                            }
                         }
-                    }
 
-                    is AlgorithmStep.ValueUpdated -> {
-                        // 기존 배열을 복제(clone)해서 새로운 객체로 만듦
-                        val newArray = _uiState.value.array.clone()
+                        is AlgorithmStep.ValueUpdated -> {
+                            // 기존 배열을 복제(clone)해서 새로운 객체로 만듦
+                            val newArray = _uiState.value.array.clone()
 
-                        // 타겟 인덱스에 새로운 값 덮어쓰기
-                          newArray[step.index] = step.newValue
+                            // 타겟 인덱스에 새로운 값 덮어쓰기
+                            newArray[step.index] = step.newValue
 
-                        _uiState.update {
-                            it.copy(
-                                array = newArray,
-                                highlightedIndex = step.index,
-                                message = "인덱스 [${step.index}]에 ${step.newValue}를 삽입했습니다."
-                            )
+                            _uiState.update {
+                                it.copy(
+                                    array = newArray,
+                                    highlightedIndex = step.index,
+                                    message = "인덱스 [${step.index}]에 ${step.newValue}를 삽입했습니다."
+                                )
+                            }
                         }
-                    }
 
-                    is AlgorithmStep.Done -> {
-                        _uiState.update {
-                            it.copy(
-                                highlightedIndex = null,
-                                message = "인덱스 [$parsedIndex]에 $parsedValue 삽입이 완료되었습니다."
-                            )
+                        is AlgorithmStep.Done -> {
+                            _uiState.update {
+                                it.copy(
+                                    highlightedIndex = null,
+                                    message = "인덱스 [$parsedIndex]에 $parsedValue 삽입이 완료되었습니다."
+                                )
+                            }
                         }
-                    }
 
-                    is AlgorithmStep.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                highlightedIndex = null,
-                                message = step.message
-                            )
+                        is AlgorithmStep.Error -> {
+                            _uiState.update {
+                                it.copy(
+                                    highlightedIndex = null,
+                                    message = step.message
+                                )
+                            }
                         }
-                    }
 
-                    is AlgorithmStep.Checking -> {}
-                    is AlgorithmStep.Found -> {}
-                    is AlgorithmStep.NotFound -> {}
+                        is AlgorithmStep.Checking -> {}
+                        is AlgorithmStep.Found -> {}
+                        is AlgorithmStep.NotFound -> {}
+                        is AlgorithmStep.Resized -> {}
+                    }
+                }
+            } else if (currentState.type == ArrayType.DYNAMIC) {
+                insertDynamicElementUseCase(currentState.array, parsedIndex, parsedValue).collect { step ->
+                    when (step) {
+                        is AlgorithmStep.Resized -> {
+                            val newArray = _uiState.value.array.clone().copyOf(step.newSize)
+
+                            _uiState.update {
+                                it.copy(
+                                    array = newArray,
+                                    highlightedIndex = null
+                                )
+                            }
+                        }
+
+                        is AlgorithmStep.Moved -> {
+                            val newArray = _uiState.value.array.clone()
+
+                            newArray[step.toIndex] = newArray[step.fromIndex]
+
+                            newArray[step.fromIndex] = null
+
+                            _uiState.update {
+                                it.copy(
+                                    highlightedIndex = step.toIndex,
+                                    array = newArray
+                                )
+                            }
+                        }
+
+                        is AlgorithmStep.ValueUpdated -> {
+                            val newArray = _uiState.value.array.clone()
+
+                            newArray[step.index] = step.newValue
+
+                            _uiState.update {
+                                it.copy(
+                                    highlightedIndex = step.index,
+                                    array = newArray,
+                                    message = "인덱스 [${step.index}]에 ${step.newValue}를 삽입했습니다."
+                                )
+                            }
+                        }
+
+                        is AlgorithmStep.Done -> {
+                            _uiState.update {
+                                it.copy(
+                                    highlightedIndex = null,
+                                    message = "동적 배열 삽입이 완료되었습니다."
+                                )
+                            }
+                        }
+
+                        is AlgorithmStep.Error -> {
+                            _uiState.update {
+                                it.copy(
+                                    highlightedIndex = null,
+                                    message = step.message
+                                )
+                            }
+                        }
+
+                        is AlgorithmStep.Checking -> {}
+                        is AlgorithmStep.Found -> {}
+                        is AlgorithmStep.NotFound -> {}
+                    }
                 }
             }
         }
@@ -460,6 +533,7 @@ class ArrayViewModel @Inject constructor(
                     is AlgorithmStep.Checking -> {}
                     is AlgorithmStep.Found -> {}
                     is AlgorithmStep.NotFound -> {}
+                    is AlgorithmStep.Resized -> {}
                 }
             }
         }
