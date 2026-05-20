@@ -14,6 +14,8 @@ class LinearSearchUseCase @Inject constructor() {
         array.validateIsNotEmpty()?.let { emit(it); return@flow }
 
         for (i in array.indices) {
+            if (array[i] == null) break
+
             emit(AlgorithmStep.Checking(i))
 
             delay(500L)
