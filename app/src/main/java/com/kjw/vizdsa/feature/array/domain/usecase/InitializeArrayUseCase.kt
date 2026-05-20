@@ -1,19 +1,17 @@
 package com.kjw.vizdsa.feature.array.domain.usecase
 
+import com.kjw.vizdsa.core.domain.util.validateInitialValuesSize
+import com.kjw.vizdsa.core.domain.util.validateMaxSize
+import com.kjw.vizdsa.core.domain.util.validateSize
 import javax.inject.Inject
 
 class InitializeArrayUseCase @Inject constructor() {
     operator fun invoke(size: Int, initialValues: List<Int>): Result<Array<Int?>> {
 
         // 유효성 검사
-        if (size <= 0) {
-            return Result.failure(IllegalArgumentException("배열의 크기는 1 이상이어야 합니다."))
-        }
-
-        // 최대 크기 제한 추가
-        if (size > 100) {
-            return Result.failure(IllegalArgumentException("시각화를 위해 배열 크기는 100 이하로 입력해주세요."))
-        }
+        size.validateSize()?.let { return Result.failure(Exception(it.message)) }
+        size.validateMaxSize()?.let { return Result.failure(Exception(it.message)) }
+        initialValues.validateInitialValuesSize(size)?.let { return Result.failure(Exception(it.message)) }
 
         // 배열 생성 로직
         val newArray = if (initialValues.isEmpty()) {

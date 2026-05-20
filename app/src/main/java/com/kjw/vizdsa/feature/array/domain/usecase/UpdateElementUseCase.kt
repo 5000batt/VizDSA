@@ -1,21 +1,17 @@
 package com.kjw.vizdsa.feature.array.domain.usecase
 
+import com.kjw.vizdsa.core.domain.util.validateIndexBounds
+import com.kjw.vizdsa.core.domain.util.validateIsNotEmpty
 import javax.inject.Inject
 
 class UpdateElementUseCase @Inject constructor() {
-    operator fun invoke(array: Array<Int?>, index: Int, newValue: Int): Result<Array<Int?>> {
+    operator fun invoke(array: Array<Int?>, targetIndex: Int, newValue: Int): Result<Array<Int?>> {
 
-        // 배열 존재 여부 확인
-        if (array.isEmpty()) {
-            return Result.failure(IllegalArgumentException("먼저 배열을 초기화해주세요."))
-        }
+        // 유효성 검사
+        array.validateIsNotEmpty()?.let { return Result.failure(Exception(it.message)) }
+        array.validateIndexBounds(targetIndex)?.let { return Result.failure(Exception(it.message)) }
 
-        // 인덱스 범위 초과 확인 (Out of Bounds)
-        if (index < 0 || index >= array.size) {
-            return Result.failure(IllegalArgumentException("인덱스가 배열 범위를 벗어났습니다."))
-        }
-
-        array[index] = newValue
+        array[targetIndex] = newValue
 
         return Result.success(array)
     }
