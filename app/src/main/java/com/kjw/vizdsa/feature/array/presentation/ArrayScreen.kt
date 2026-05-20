@@ -38,6 +38,9 @@ import androidx.compose.ui.unit.sp
 import com.kjw.vizdsa.core.ui.components.ActionButton
 import com.kjw.vizdsa.core.ui.components.CommonBottomBar
 import com.kjw.vizdsa.core.ui.components.CommonCell
+import com.kjw.vizdsa.core.ui.components.IndexInputField
+import com.kjw.vizdsa.core.ui.components.SizeInputField
+import com.kjw.vizdsa.core.ui.components.ValueInputField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -146,87 +149,63 @@ fun ArrayScreen(
         ) {
             when (uiState.operation) {
                 ArrayOperation.INITIALIZE -> {
-                    OutlinedTextField(
+                    SizeInputField(
                         value = uiState.sizeInput,
                         onValueChange = onSizeChange,
-                        label = { Text("배열 크기") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        label = "배열 크기",
+                        modifier = Modifier.weight(1f)
                     )
-
-                    OutlinedTextField(
+                    ValueInputField(
                         value = uiState.valueInput,
                         onValueChange = onValueChange,
-                        label = { Text("배열 요소 (ex: 1,2,3)") },
+                        label = "배열 요소 (ex: 1,2,3)",
                         modifier = Modifier.weight(2f),
-                        singleLine = true
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
                     )
                 }
                 ArrayOperation.ACCESS_ELEMENT -> {
-                    OutlinedTextField(
+                    IndexInputField(
                         value = uiState.indexInput,
                         onValueChange = onIndexChange,
-                        label = { Text("인덱스") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        modifier = Modifier.weight(1f)
                     )
                 }
                 ArrayOperation.UPDATE_ELEMENT -> {
-                    OutlinedTextField(
+                    IndexInputField(
                         value = uiState.indexInput,
                         onValueChange = onIndexChange,
-                        label = { Text("인덱스") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        modifier = Modifier.weight(1f)
                     )
-                    OutlinedTextField(
+                    ValueInputField(
                         value = uiState.valueInput,
                         onValueChange = onValueChange,
-                        label = { Text("값") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        modifier = Modifier.weight(1f)
                     )
                 }
                 ArrayOperation.LINEAR_SEARCH -> {
-                    OutlinedTextField(
+                    ValueInputField(
                         value = uiState.valueInput,
                         onValueChange = onValueChange,
-                        label = { Text("값") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        modifier = Modifier.weight(1f)
                     )
                 }
                 ArrayOperation.INSERT_ELEMENT -> {
-                    OutlinedTextField(
+                    IndexInputField(
                         value = uiState.indexInput,
                         onValueChange = onIndexChange,
-                        label = { Text("인덱스") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        modifier = Modifier.weight(1f)
                     )
-                    OutlinedTextField(
+                    ValueInputField(
                         value = uiState.valueInput,
                         onValueChange = onValueChange,
-                        label = { Text("값") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        modifier = Modifier.weight(1f)
                     )
                 }
                 ArrayOperation.DELETE_ELEMENT -> {
-                    OutlinedTextField(
+                    IndexInputField(
                         value = uiState.indexInput,
                         onValueChange = onIndexChange,
-                        label = { Text("인덱스") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        modifier = Modifier.weight(1f)
                     )
                 }
                 else -> {
