@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class LinearSearchUseCase @Inject constructor() {
-    operator fun invoke(array: Array<Int?>, target: Int): Flow<AlgorithmStep> = flow {
+    operator fun invoke(array: Array<Int?>, targetValue: Int): Flow<AlgorithmStep> = flow {
 
         // 유효성 검사
         array.validateIsNotEmpty()?.let { emit(it); return@flow }
@@ -20,13 +20,13 @@ class LinearSearchUseCase @Inject constructor() {
 
             delay(500L)
 
-            if (array[i] == target) {
-                emit(AlgorithmStep.Found(i))
+            if (array[i] == targetValue) {
+                emit(AlgorithmStep.Found(i, "${targetValue}를 찾았습니다. 인덱스: ${i}"))
                 return@flow
             }
         }
 
-        emit(AlgorithmStep.NotFound)
+        emit(AlgorithmStep.NotFound("${targetValue}은(는) 배열에 존재하지 않습니다."))
 
         /*
         withIndex() 방식

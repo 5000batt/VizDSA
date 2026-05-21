@@ -34,9 +34,9 @@ class InsertElementUseCase @Inject constructor() {
         }
 
         // 새로운 값 삽입 명령 방출
-        emit(AlgorithmStep.ValueUpdated(targetIndex, insertValue))
+        emit(AlgorithmStep.ValueUpdated(targetIndex, insertValue, "인덱스 [${targetIndex}]에 ${insertValue}를 삽입했습니다."))
 
         delay(500L)
-        emit(AlgorithmStep.Done)
+        emit(AlgorithmStep.Done("정적 배열 삽입이 완료되었습니다."))
     }
 }

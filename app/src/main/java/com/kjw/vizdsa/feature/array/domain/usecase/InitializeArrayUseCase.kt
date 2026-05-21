@@ -1,12 +1,13 @@
 package com.kjw.vizdsa.feature.array.domain.usecase
 
+import com.kjw.vizdsa.core.domain.model.OperationResult
 import com.kjw.vizdsa.core.domain.util.validateInitialValuesSize
 import com.kjw.vizdsa.core.domain.util.validateMaxSize
 import com.kjw.vizdsa.core.domain.util.validateSize
 import javax.inject.Inject
 
 class InitializeArrayUseCase @Inject constructor() {
-    operator fun invoke(size: Int, initialValues: List<Int>): Result<Array<Int?>> {
+    operator fun invoke(size: Int, initialValues: List<Int>): Result<OperationResult<Array<Int?>>> {
 
         // 유효성 검사
         size.validateSize()?.let { return Result.failure(Exception(it.message)) }
@@ -24,6 +25,6 @@ class InitializeArrayUseCase @Inject constructor() {
             }
         }
 
-        return Result.success(newArray)
+        return Result.success(OperationResult(newArray, "크기가 ${size}인 배열이 초기화되었습니다."))
     }
 }

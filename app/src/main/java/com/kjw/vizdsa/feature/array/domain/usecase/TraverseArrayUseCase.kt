@@ -21,6 +21,6 @@ class TraverseArrayUseCase @Inject constructor() {
             delay(500L)
         }
 
-        emit(AlgorithmStep.Done)
+        emit(AlgorithmStep.Done("배열 순회를 완료했습니다."))
     }
 }

@@ -24,7 +24,7 @@ class DeleteDynamicElementUseCase @Inject constructor() {
         array.validateElementExists(targetIndex)?.let { emit(it); return@flow }
 
         // 삭제 작업 및 방출
-        emit(AlgorithmStep.ValueUpdated(targetIndex, null))
+        emit(AlgorithmStep.ValueUpdated(targetIndex, null, "인덱스 [$targetIndex]의 값이 삭제되었습니다."))
         delay(500L)
 
         // 시프트 작업 및 방출
@@ -44,6 +44,6 @@ class DeleteDynamicElementUseCase @Inject constructor() {
             delay(500L)
         }
 
-        emit(AlgorithmStep.Done)
+        emit(AlgorithmStep.Done("동적 배열 삭제가 완료되었습니다."))
     }
 }

@@ -1,11 +1,12 @@
 package com.kjw.vizdsa.feature.array.domain.usecase
 
+import com.kjw.vizdsa.core.domain.model.OperationResult
 import com.kjw.vizdsa.core.domain.util.validateIndexBounds
 import com.kjw.vizdsa.core.domain.util.validateIsNotEmpty
 import javax.inject.Inject
 
 class UpdateElementUseCase @Inject constructor() {
-    operator fun invoke(array: Array<Int?>, targetIndex: Int, newValue: Int): Result<Array<Int?>> {
+    operator fun invoke(array: Array<Int?>, targetIndex: Int, newValue: Int): Result<OperationResult<Array<Int?>>> {
 
         // 유효성 검사
         array.validateIsNotEmpty()?.let { return Result.failure(Exception(it.message)) }
@@ -13,6 +14,6 @@ class UpdateElementUseCase @Inject constructor() {
 
         array[targetIndex] = newValue
 
-        return Result.success(array)
+        return Result.success(OperationResult(array, "인덱스 [$targetIndex]의 값을 ${newValue}로 수정했습니다."))
     }
 }
